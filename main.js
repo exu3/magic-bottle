@@ -80,10 +80,33 @@ class Ent {
   }
 }
 
+let messages = [];
+class Message {
+  constructor(msg, time, color) {
+    this.msg = msg;
+    this.time = time;
+    this.color = color || "white";
+  }
+
+  draw() {
+    ctx.fillStyle = this.color;
+    ctx.fillText(this.msg, canvas.width / 2, canvas.height / 2);
+  }
+}
+
+messages.push(
+  new Message({
+    msg: "sup nerds",
+    time: 100,
+    color: "white",
+  }).draw
+);
+
 let player = new Ent({
   hitBubbleSize: 1,
   friction: 0.8,
   image: "flaskOutline",
+  image2: "flaskFill",
   w: 40,
   h: 40,
 });
@@ -199,7 +222,7 @@ function* questGen(map) {
     update() {
       if (magnitude({ x: player.x - this.x, y: player.y - this.y }) < 30) {
         if (this.unlock) {
-          alert("You got the key!");
+          console.log("you got the key");
         }
       }
     },
@@ -259,8 +282,6 @@ function* questGen(map) {
     },
   });
 
-  alert("you win");
-
   // if all the eyeballs are dead, the doors open to the other rooms
   // (and the mega-me spawns in the other room)
   // when the mega-me is dead, the key to the final door is dropped
@@ -316,6 +337,11 @@ function frame() {
       ctx.save();
       ctx.translate(x, y);
       ctx.rotate(ent.rot);
+      {
+        ent.image2 == "flaskFill"
+          ? ctx.drawImage(images[ent.image2], 0, 0, w, h, w / -2, h / -2, w, h)
+          : "";
+      }
       ctx.drawImage(images[ent.image], w / -2, h / -2, w, h);
       ctx.restore();
     }
