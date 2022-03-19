@@ -1,5 +1,6 @@
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
+
 const MAP_SCALE = 50;
 
 (window.onresize = () => {
@@ -32,12 +33,13 @@ const imageLinks = {
   laser: "https://cloud-2u8ficsp5-hack-club-bot.vercel.app/1l1_sprite_3.png",
   eyeball: "https://cloud-2u8ficsp5-hack-club-bot.vercel.app/2l1_sprite_2.png",
   flaskOutline:
-    "https://cloud-2u8ficsp5-hack-club-bot.vercel.app/3l1_sprite_1.png",
+    "https://cloud-pfm3bqx98-hack-club-bot.vercel.app/0layer_2_bottle_1.png",
   flaskFill:
-    "https://cloud-2u8ficsp5-hack-club-bot.vercel.app/7l0_sprite_1.png",
+    "https://cloud-pfm3bqx98-hack-club-bot.vercel.app/1layer_2__clone__bottle_1.png",
   door: "https://cloud-l1gxdgfvl-hack-club-bot.vercel.app/0new_piskel-5.png.png",
   key: "https://cloud-21hd3m26u-hack-club-bot.vercel.app/0new_piskel-6.png.png",
 };
+
 const loadImages = new Promise((res) => {
   const images = JSON.parse(JSON.stringify(imageLinks));
   for (const name in imageLinks) {
@@ -111,8 +113,7 @@ setInterval(() => {
         rot: Math.atan2(vel.y, vel.x),
       });
 
-      /* calculator how far away we need to be
-         not to hit the person spawning us */
+      // calculate how far away we need to be to not hit the person spawning us
       const space = enemy.hitBubbleSize + projectile.hitBubbleSize;
       projectile.x = enemy.x + vel.x * space;
       projectile.y = enemy.y + vel.y * space;
