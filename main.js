@@ -171,6 +171,7 @@ function aliveCount(ents) {
 }
 
 function* questGen(map) {
+  yield* delay(300);
   // no thoughts head empty. text doesn't work -ella
   let text = new Message({
     text: "awefawefawef",
