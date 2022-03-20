@@ -285,7 +285,7 @@ function* questGen(map) {
       {
         x: player.x - map.doors[2].pos[0],
         y: player.y - map.doors[2].pos[1],
-      } > 5
+      } < 1
     )
   )
     yield;
