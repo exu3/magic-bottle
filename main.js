@@ -110,8 +110,8 @@ let messages = [];
 class Message {
   constructor(args = {}) {
     Object.assign(this, args);
-    this.text = args.content ?? "";
-    this.time = args.time ?? 2000;
+    this.text = args.text ?? "";
+    this.time = args.time ?? 5000;
     this.color = args.color ?? "white";
     this.x = args.x ?? 0;
     this.y = args.y ?? 0;
@@ -119,6 +119,15 @@ class Message {
     messages.push(this);
   }
 }
+
+// random message for no reason
+let hello = new Message({
+  text: "hello there.",
+  color: "white",
+  x: canvas.width / 4,
+  y: canvas.height / 4,
+  time: 9000,
+});
 
 let player = new Ent({
   hitBubbleSize: 1,
@@ -202,19 +211,6 @@ function aliveCount(ents) {
 }
 
 function* questGen(map) {
-  yield* delay(300);
-
-  // no thoughts head empty. text doesn't work -ella
-  let yeah = [];
-  yeah.push(
-    new Message({
-      text: "Hello there.",
-      color: "white",
-      x: player.x,
-      y: player.y,
-    })
-  );
-
   let doors = map.doors.map(
     ({ pos: [x, y] }) =>
       new Ent({
@@ -244,8 +240,27 @@ function* questGen(map) {
     },
   });
 
+  // spawn player in the initial room (on the right relative to the map)
+  player.x = map.oneoffs.spawnPlayer0[0] * MAP_SCALE;
+  player.y = map.oneoffs.spawnPlayer0[1] * MAP_SCALE;
+
+  let welcome = new Message({
+    text: "Welcome there.",
+    color: "white",
+    x: player.x + 50,
+    y: player.y - 50,
+    time: 5000,
+  });
+
+  // TODO: add stuuffff to this room // don't move onto next room until player is done with current room
+
   // This is the room where enemies spawn around the player and shoot lasers
   // when all (but one) of the enemies are dead, the player can advance to the next room (the one with the MEGA-ME)
+
+  yield* delay(5000); // TODO: fix this. right now, this delay just exists because the first quest doesn't really have anything yet
+
+  player.x = map.oneoffs.spawnPlayer1[0] * MAP_SCALE; // spawn the player in the room (in the middle of the eyeballs)
+  player.y = map.oneoffs.spawnPlayer1[1] * MAP_SCALE;
   let eyeballs = [];
   for (let i = 0; i < 10; i++) {
     const r = (i / 10) * Math.PI * 2;
@@ -351,16 +366,6 @@ function frame() {
   cam = lerp(cam, player, 0.1);
   ctx.translate(canvas.width / 2 - cam.x, canvas.height / 2 - cam.y);
 
-  // render messages on the screen
-  // it no work -ella
-  ctx.save();
-  for (const msg of messages) {
-    ctx.fillStyle = msg.color;
-    ctx.font = "20px Arial";
-    ctx.fillText(msg.text, msg.x, msg.y);
-  }
-  ctx.restore();
-
   // draw the map using coordinates from map.json (Blender export)
   ctx.fillStyle = "slategray";
   const { circles, rectangles } = map;
@@ -383,6 +388,23 @@ function frame() {
   ctx.restore();
 
   // Entity game loop
+  let msgTimeout;
+  setTimeout(() => {
+    for (const msg of messages) {
+      ctx.fillStyle = msg.color;
+      ctx.font = "20px Monospace";
+      ctx.fillText(msg.text, msg.x, msg.y);
+      msgTimeout = msg.time;
+    }
+  }, msgTimeout);
+
+  // show player coordinates for debugging?
+  ctx.fillText(
+    `x: ${Math.round(player.x)} y: ${Math.round(player.y)}`,
+    player.x + 300,
+    player.y - 200
+  );
+
   for (const ent of ents) {
     ctx.fillStyle = "rgb(0,0,0)";
     const { x, y, w, h } = ent;
@@ -436,8 +458,8 @@ function frame() {
 
     if (ent.update) ent.update();
 
-    // Spiky entities (e.g. lasers emitted by the eyeballs)
-    // ghosts are not affected by lasers
+    // Spiky entities are harmful when touched
+    // ghosts are not affected by spiky entities
     if (ent.spiky)
       for (const other of ents) {
         if (ent !== other && !other.ghost) {
