@@ -2,7 +2,7 @@
 
 Jame gam.
 
-### Story:
+## Story:
 
 - The player character is a Bottle.
 - All of her friends (a book, a broom, etc.) have found a magic talent, but she still doesn't have one :(
@@ -17,7 +17,7 @@ Jame gam.
 - there are breakable obstacles strewn about which can absorb attacks
 - the player's health is represented by how full the bottle is?
 
-### Timeline:
+## Timeline:
 
 Friday is "engine day," we nail down:
 
@@ -31,7 +31,7 @@ Friday is "engine day," we nail down:
 
   Then on saturday we work on the quests. Each level is a discrete quest?
 
-  ### An example quest:
+  ## An example quest:
 
   - [x] player stumbles into a circular area lined with monsters hiding behind statues
   - [x] they peek out from behind the statues and shoot projectiles at the player
@@ -44,3 +44,9 @@ Friday is "engine day," we nail down:
   - [x] when it dies, it drops a key
   - [x] the second is just a locked door leading to the next level you need the key to open
   - [ ] in this room, as a red herring, there is also an invincible statue that shoots at you whenever you are nearby
+
+## Ideas:
+
+- enemies that explode into a dozen lasers and chase you being led into a pool of enemies that shoot lasers but can't hurt each other
+- a level that starts with one enemy shooting at you in a cramped room, but the walls are actually destructible and as the bullets you dodge break down the walls, you discover more adjacent rooms (edited)
+- a level like this except there are two, non-reflective blocks to push and a lever that spawns an enemy that chases you. you have to use the blocks to trap the enemy that chases you next to the opening, then push it into the tunnel with the eyeballs
