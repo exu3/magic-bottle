@@ -176,8 +176,8 @@ function* questGen(map) {
   let text = new Message({
     text: "awefawefawef",
     color: "white",
-    x: map.width / 2,
-    y: map.height / 2,
+    x: player.x,
+    y: player.y,
   });
 
   // ADD THE ENEMIES
