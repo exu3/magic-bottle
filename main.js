@@ -42,16 +42,16 @@ function rayHitCircle({ ro, rd, circle, radius }) {
   let thc = Math.sqrt(radius2 - d2);
   return {
     t0: tca - thc,
-    t1: tca + thc
+    t1: tca + thc,
   };
 }
 
 function reflect(d, n) {
   let dot2 = dot(d, n) * 2;
   return {
-    x: d.x - n.x*dot2,
-    y: d.y - n.y*dot2,
-  }
+    x: d.x - n.x * dot2,
+    y: d.y - n.y * dot2,
+  };
 }
 
 const imageLinks = {
@@ -152,7 +152,7 @@ setInterval(() => {
         image: "laser",
         update() {
           this.rot = Math.atan2(this.vel.y, this.vel.x);
-        }
+        },
       });
 
       // calculate how far away we need to be to not hit the person spawning us
@@ -164,6 +164,7 @@ setInterval(() => {
     }
 }, 1000);
 
+// player moves in direction of respective arrow key
 function playerLogic() {
   let mv = { x: 0, y: 0 };
   if (keys.has("ArrowUp")) mv.y -= 5;
@@ -194,36 +195,25 @@ function eyeDraw(images) {
   ctx.drawImage(images.eyeball, x + w / -2, y + h / -2, w, h);
 }
 
+// returns the number of ents that are alive
+// if there is 1 or less, the player has conquered the room
 function aliveCount(ents) {
   return ents.filter((e) => e.alive()).length;
 }
 
 function* questGen(map) {
   yield* delay(300);
-  // no thoughts head empty. text doesn't work -ella
-  let text = new Message({
-    text: "awefawefawef",
-    color: "white",
-    x: player.x,
-    y: player.y,
-  });
 
-  // ADD THE ENEMIES
-  let eyeballs = [];
-  for (let i = 0; i < 10; i++) {
-    const r = (i / 10) * Math.PI * 2;
-    eyeballs.push(
-      new Ent({
-        seed: Math.random() * 100,
-        shoots: true,
-        x: Math.cos(r) * 190,
-        y: Math.sin(r) * 190,
-        draw: eyeDraw,
-        w: 30,
-        h: 30,
-      })
-    );
-  }
+  // no thoughts head empty. text doesn't work -ella
+  let yeah = [];
+  yeah.push(
+    new Message({
+      text: "Hello there.",
+      color: "white",
+      x: player.x,
+      y: player.y,
+    })
+  );
 
   let doors = map.doors.map(
     ({ pos: [x, y] }) =>
@@ -254,9 +244,32 @@ function* questGen(map) {
     },
   });
 
+  // This is the room where enemies spawn around the player and shoot lasers
+  // when all (but one) of the enemies are dead, the player can advance to the next room (the one with the MEGA-ME)
+  let eyeballs = [];
+  for (let i = 0; i < 10; i++) {
+    const r = (i / 10) * Math.PI * 2;
+    eyeballs.push(
+      new Ent({
+        seed: Math.random() * 100,
+        shoots: true,
+        x: Math.cos(r) * 190,
+        y: Math.sin(r) * 190,
+        draw: eyeDraw,
+        w: 30,
+        h: 30,
+      })
+    );
+  }
+
   while (aliveCount(eyeballs) > 1) yield;
 
   eyeballs.concat(doors).forEach((e) => e.delete());
+
+  // Room where the key is dropped
+  // This is the room where the Mega-me and Mini-mes are
+  // when all the minimes are gone (when there is one remaining), the key is dropped
+  // the key can be used to "unlock" the key door (it's a one-off entity)
 
   yield* delay(300);
 
@@ -277,6 +290,7 @@ function* questGen(map) {
         draw: eyeDraw,
         w: 30,
         h: 30,
+        // Mini-mes rotate around the mega-me
         update() {
           let oldX = this.x - x;
           let oldY = this.y - y;
@@ -294,6 +308,8 @@ function* questGen(map) {
   yield* delay(300);
 
   minimes.forEach((e) => e.delete());
+
+  // key is dropped in the middle of the room
   let key = new Ent({
     x,
     y,
@@ -322,7 +338,8 @@ function frame() {
   if (player.alive()) {
     quest.next();
   }
-  /* draw background color */
+
+  // Draw background color
   ctx.fillStyle = "rgb(40, 45, 60)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -330,7 +347,7 @@ function frame() {
 
   ctx.save();
 
-  /* update camera */
+  // Update the camera with linear interpolation
   cam = lerp(cam, player, 0.1);
   ctx.translate(canvas.width / 2 - cam.x, canvas.height / 2 - cam.y);
 
@@ -344,7 +361,7 @@ function frame() {
   }
   ctx.restore();
 
-  /* draw map */
+  // draw the map using coordinates from map.json (Blender export)
   ctx.fillStyle = "slategray";
   const { circles, rectangles } = map;
   ctx.save();
@@ -365,7 +382,7 @@ function frame() {
   }
   ctx.restore();
 
-  /* ENTITY GAME LOOP */
+  // Entity game loop
   for (const ent of ents) {
     ctx.fillStyle = "rgb(0,0,0)";
     const { x, y, w, h } = ent;
@@ -382,17 +399,24 @@ function frame() {
     ent.vel.x *= ent.friction;
     ent.vel.y *= ent.friction;
     const speed = magnitude(ent.vel);
+
+    // Normalize
     let m = normalize({
       x: ent.vel.x,
       y: ent.vel.y,
     });
+
+    // Lasers are reflected off of walls
     (() => {
-      const { pos: [x, y], scale } = circles[0]
+      const {
+        pos: [x, y],
+        scale,
+      } = circles[0];
       const { t1 } = rayHitCircle({
         ro: { x: ent.x, y: ent.y },
         rd: m,
         circle: { x, y },
-        radius: scale * MAP_SCALE
+        radius: scale * MAP_SCALE,
       });
 
       if (t1 < 0) {
@@ -412,6 +436,8 @@ function frame() {
 
     if (ent.update) ent.update();
 
+    // Spiky entities (e.g. lasers emitted by the eyeballs)
+    // ghosts are not affected by lasers
     if (ent.spiky)
       for (const other of ents) {
         if (ent !== other && !other.ghost) {
@@ -450,6 +476,8 @@ function frame() {
   }
   ctx.restore();
 }
+
+// Load images and quest map
 Promise.all([loadImages, fetch("./map.json").then((r) => r.json())]).then(
   ([images, map]) => {
     console.log(map);
