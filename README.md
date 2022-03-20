@@ -47,7 +47,3 @@ friday is "engine day," we nail down
   - [x] when it dies, it drops a key
   - [x] the second is just a locked door leading to the next level you need the key to open
   - [ ] in this room, as a red herring, there is also an invincible statue that shoots at you whenever you are nearby
-
-  ### other things:
-
-  - [ ] display messages using text instead of `alert()`

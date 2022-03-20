@@ -234,7 +234,14 @@ function* questGen(map) {
     update() {
       if (magnitude({ x: player.x - this.x, y: player.y - this.y }) < 30) {
         if (this.unlock) {
-          alert("You got the key!");
+          // the code below is untested so it's probably broken
+          new Message({
+            text: "you have unlocked the door",
+            color: "white",
+            x: this.x,
+            y: this.y,
+            time: 3000,
+          });
         }
       }
     },
