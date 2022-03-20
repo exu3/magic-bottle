@@ -2,16 +2,14 @@
 
 Jame gam.
 
-## To do:
+### Story:
 
-### story:
+- The player character is a Bottle.
+- All of her friends (a book, a broom, etc.) have found a magic talent, but she still doesn't have one :(
+- She sets out on a quest to go from her home village to the Grand Magician who guards himself with lots of Eyeballs.
+- Along the way, she has to overcome several environmental obstacles which involve fighting the hostile creatures known as 👁️👁️👁️👁️.
 
-- the player character is a bottle.
-- all of her friends (a book, a broom, etc.) have found a magic talent, but she still doesn't have one :(
-- so she sets out on a quest to go from her home village to the Grand Magician who can answer any question.
-- along the way, she has to overcome several environmental obstacles which involve fighting hostile creatures
-
-### gameplay:
+### Gameplay:
 
 - 2D action RPG
 - the player's attacks are timing based and melee
@@ -19,9 +17,9 @@ Jame gam.
 - there are breakable obstacles strewn about which can absorb attacks
 - the player's health is represented by how full the bottle is?
 
-### timeline:
+### Timeline:
 
-friday is "engine day," we nail down
+Friday is "engine day," we nail down:
 
 - [x] character movement
 - [ ] physics
@@ -31,10 +29,9 @@ friday is "engine day," we nail down
 - [x] basic enemy AI
 - [x] most enemy AI will be bespoke to that enemy
 
-  then on saturday we work on the quests
-  each level is a discrete quest?
+  Then on saturday we work on the quests. Each level is a discrete quest?
 
-  ### an example quest:
+  ### An example quest:
 
   - [x] player stumbles into a circular area lined with monsters hiding behind statues
   - [x] they peek out from behind the statues and shoot projectiles at the player
