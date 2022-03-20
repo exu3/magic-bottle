@@ -273,11 +273,23 @@ function* questGen(map) {
     );
   }
 
-  // TODO: add stuuffff to this room // don't move onto next room until player is done with current room
+  // TODO: add stuuffff to this room
 
   // This is the room where enemies spawn around the player and shoot lasers
   // when all (but one) of the enemies are dead, the player can advance to the next room (the one with the MEGA-ME). x: 0 , y : 0
 
+  // move onto the next quest when the player reaches the door
+  // this is kind of hacky...what if the door changes it's position in the door array?
+  // this code is also untested
+  while (
+    magnitude(
+      {
+        x: player.x - map.doors[3].pos[0],
+        y: player.y - map.doors[3].pos[1],
+      } > 30
+    )
+  )
+    yield;
   // TODO: fix this. right now, this delay just exists because the first quest doesn't really have anything yet
   // I think something is borked cause I can't seem to travel within the room in the first quest (quest0)
   yield* delay(3000);
@@ -410,7 +422,6 @@ function frame() {
   }
   ctx.restore();
 
-  // Entity game loop
   let msgTimeout;
   setTimeout(() => {
     for (const msg of messages) {
@@ -428,6 +439,7 @@ function frame() {
     player.y - 200
   );
 
+  // Entity game loop
   for (const ent of ents) {
     ctx.fillStyle = "rgb(0,0,0)";
     const { x, y, w, h } = ent;
