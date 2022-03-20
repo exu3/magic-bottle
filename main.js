@@ -106,6 +106,20 @@ class Ent {
   }
 }
 
+let messages = [];
+class Message {
+  constructor(args = {}) {
+    Object.assign(this, args);
+    this.text = args.content ?? "";
+    this.time = args.time ?? 2000;
+    this.color = args.color ?? "white";
+    this.x = args.x ?? 0;
+    this.y = args.y ?? 0;
+
+    messages.push(this);
+  }
+}
+
 let player = new Ent({
   hitBubbleSize: 1,
   friction: 0.8,
@@ -186,6 +200,13 @@ function aliveCount(ents) {
 
 function* questGen(map) {
   yield* delay(300);
+  // no thoughts head empty. text doesn't work -ella
+  let text = new Message({
+    text: "awefawefawef",
+    color: "white",
+    x: map.width / 2,
+    y: map.height / 2,
+  });
 
   // ADD THE ENEMIES
   let eyeballs = [];
@@ -312,6 +333,16 @@ function frame() {
   /* update camera */
   cam = lerp(cam, player, 0.1);
   ctx.translate(canvas.width / 2 - cam.x, canvas.height / 2 - cam.y);
+
+  // render messages on the screen
+  // it no work -ella
+  ctx.save();
+  for (const msg of messages) {
+    ctx.fillStyle = msg.color;
+    ctx.font = "20px Arial";
+    ctx.fillText(msg.text, msg.x, msg.y);
+  }
+  ctx.restore();
 
   /* draw map */
   ctx.fillStyle = "slategray";
