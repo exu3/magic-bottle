@@ -259,12 +259,28 @@ function* questGen(map) {
     time: 5000,
   });
 
+  // eyeballz are the eyeballz that appear on the first quest, not to be confused with eyeballs
+  let eyeballz = [];
+  let eyeballCount = 4;
+  for (let i = 0; i < eyeballCount; i++) {
+    eyeballz.push(
+      new Ent({
+        shoots: true,
+        draw: eyeDraw,
+        x: map.oneoffs.spawnPlayer0[0] * MAP_SCALE + i * 50, // TODO: fix eyeballz spawn location. maybe make it a oneoff? or relative to the players oneoff spawn location?
+        y: map.oneoffs.spawnPlayer0[0] * MAP_SCALE,
+      })
+    );
+  }
+
   // TODO: add stuuffff to this room // don't move onto next room until player is done with current room
 
   // This is the room where enemies spawn around the player and shoot lasers
-  // when all (but one) of the enemies are dead, the player can advance to the next room (the one with the MEGA-ME)
+  // when all (but one) of the enemies are dead, the player can advance to the next room (the one with the MEGA-ME). x: 0 , y : 0
 
-  yield* delay(5000); // TODO: fix this. right now, this delay just exists because the first quest doesn't really have anything yet
+  // TODO: fix this. right now, this delay just exists because the first quest doesn't really have anything yet
+  // I think something is borked cause I can't seem to travel within the room in the first quest (quest0)
+  yield* delay(3000);
 
   player.x = map.oneoffs.spawnPlayer1[0] * MAP_SCALE; // spawn the player in the room (in the middle of the eyeballs)
   player.y = map.oneoffs.spawnPlayer1[1] * MAP_SCALE;
