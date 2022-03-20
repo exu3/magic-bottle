@@ -8,8 +8,16 @@ const MAP_SCALE = 50;
   canvas.height = window.innerHeight;
 })();
 
+function dot(a, b) {
+  return a.x * b.x + a.y * b.y;
+}
+
+function magnitude(v) {
+  return Math.sqrt(dot(v, v));
+}
+
 function normalize(v) {
-  const l = Math.sqrt(v.x * v.x + v.y * v.y);
+  const l = magnitude(v);
   if (l > 0) {
     v.x /= l;
     v.y /= l;
@@ -17,15 +25,33 @@ function normalize(v) {
   return v;
 }
 
-function magnitude(v) {
-  return Math.sqrt(v.x * v.x + v.y * v.y);
-}
-
 function lerp(a, b, t) {
   return {
     x: a.x + (b.x - a.x) * t,
     y: a.y + (b.y - a.y) * t,
   };
+}
+
+function rayHitCircle({ ro, rd, circle, radius }) {
+  let radius2 = radius * radius;
+
+  let L = { x: circle.x - ro.x, y: circle.y - ro.y };
+  let tca = dot(L, rd);
+  let d2 = dot(L, L) - tca * tca;
+  if (d2 > radius2) return false;
+  let thc = Math.sqrt(radius2 - d2);
+  return {
+    t0: tca - thc,
+    t1: tca + thc
+  };
+}
+
+function reflect(d, n) {
+  let dot2 = dot(d, n) * 2;
+  return {
+    x: d.x - n.x*dot2,
+    y: d.y - n.y*dot2,
+  }
 }
 
 const imageLinks = {
@@ -124,7 +150,9 @@ setInterval(() => {
         hitBubbleSize: 5,
         spiky: true,
         image: "laser",
-        rot: Math.atan2(vel.y, vel.x),
+        update() {
+          this.rot = Math.atan2(this.vel.y, this.vel.x);
+        }
       });
 
       // calculate how far away we need to be to not hit the person spawning us
@@ -351,8 +379,36 @@ function frame() {
       ctx.restore();
     }
 
-    ent.x += ent.vel.x *= ent.friction;
-    ent.y += ent.vel.y *= ent.friction;
+    ent.vel.x *= ent.friction;
+    ent.vel.y *= ent.friction;
+    const speed = magnitude(ent.vel);
+    let m = normalize({
+      x: ent.vel.x,
+      y: ent.vel.y,
+    });
+    (() => {
+      const { pos: [x, y], scale } = circles[0]
+      const { t1 } = rayHitCircle({
+        ro: { x: ent.x, y: ent.y },
+        rd: m,
+        circle: { x, y },
+        radius: scale * MAP_SCALE
+      });
+
+      if (t1 < 0) {
+        const untilWall = speed + t1;
+        const afterWall = speed - untilWall;
+        ent.x += m.x * untilWall;
+        ent.y += m.y * untilWall;
+        const r = reflect(m, normalize({ x: ent.x - x, y: ent.y - y }));
+        ent.x += r.x * afterWall;
+        ent.y += r.y * afterWall;
+        ent.vel = { x: r.x * speed, y: r.y * speed };
+      } else {
+        ent.x += m.x * speed;
+        ent.y += m.y * speed;
+      }
+    })();
 
     if (ent.update) ent.update();
 
