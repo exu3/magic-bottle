@@ -261,14 +261,13 @@ function* questGen(map) {
 
   // eyeballz are the eyeballz that appear on the first quest, not to be confused with eyeballs
   let eyeballz = [];
-  let eyeballCount = 4;
-  for (let i = 0; i < eyeballCount; i++) {
+  for (let i = 0; i < map.eyeballTwins.length; i++) {
     eyeballz.push(
       new Ent({
         shoots: true,
         draw: eyeDraw,
-        x: map.oneoffs.spawnPlayer0[0] * MAP_SCALE + i * 50, // TODO: fix eyeballz spawn location. maybe make it a oneoff? or relative to the players oneoff spawn location?
-        y: map.oneoffs.spawnPlayer0[0] * MAP_SCALE,
+        x: map.eyeballTwins[i].pos[0] * MAP_SCALE, // TODO: fix eyeballz spawn location. maybe make it a oneoff? or relative to the players oneoff spawn location?
+        y: map.eyeballTwins[i].pos[1] * MAP_SCALE,
       })
     );
   }
@@ -284,15 +283,16 @@ function* questGen(map) {
   while (
     magnitude(
       {
-        x: player.x - map.doors[3].pos[0],
-        y: player.y - map.doors[3].pos[1],
-      } > 30
+        x: player.x - map.doors[2].pos[0],
+        y: player.y - map.doors[2].pos[1],
+      } > 5
     )
   )
     yield;
-  // TODO: fix this. right now, this delay just exists because the first quest doesn't really have anything yet
-  // I think something is borked cause I can't seem to travel within the room in the first quest (quest0)
-  yield* delay(3000);
+
+  // TODO / TO FIX: I think something is borked cause I can't seem to travel within the room in the first quest (quest0)
+
+  yield* delay(5000);
 
   player.x = map.oneoffs.spawnPlayer1[0] * MAP_SCALE; // spawn the player in the room (in the middle of the eyeballs)
   player.y = map.oneoffs.spawnPlayer1[1] * MAP_SCALE;
